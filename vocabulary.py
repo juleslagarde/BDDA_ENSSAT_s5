@@ -1,4 +1,4 @@
-﻿#!/usr/bin/python
+#!/usr/bin/python
 
 import sys
 import os
@@ -346,7 +346,18 @@ class Vocabulary:
         if a not in self.mappingTab.keys():
             raise Exception("Attribute %s not found in the vocabulary (mapping)"%(a))
         return self.mappingTab[a]
-                    
+
+    def getDescription(self):
+        desc = []
+        for part in self.getPartitions():
+            partdesc = dict()
+            partdesc["name"] = part.getAttName()
+            partdesc["modalities"] = []
+            for partelt in part.getModalities():
+                partdesc["modalities"].append(partelt.getName())
+            desc.append(partdesc)
+        return desc
+
 
 if __name__ == '__main__':
     vocFile='FlightsVoc2.txt'

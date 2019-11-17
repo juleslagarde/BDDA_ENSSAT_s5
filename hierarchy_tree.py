@@ -20,6 +20,8 @@ def compute(rewriter):
 			counter[categ]=1
 		flight = rewriter.readFlight()
 		n += 1
+		if n % 100000 == 0:
+			print(n)
 	rw.close()
 	return counter
 
@@ -37,7 +39,12 @@ if __name__ == "__main__":
 		print("Voc file %s not found"%(sys.argv[2]))
 		sys.exit(1)
 	rw = RewriterFromCSV(voc, sys.argv[2])
-	print(json.dumps(compute(rw), sort_keys=True, indent=4, separators=(',', ': ')))
+	fOut = open(sys.argv[3], "w+")
+	result = compute(rw)
+	result["desc"] = voc.getDescription()
+	jsonOut = json.dumps(result)
+	fOut.write(jsonOut)
+	fOut.close()
 
 	output = open(sys.argv[3], "w")
 #	for part in voc.getPartitions()[:5]:
