@@ -2,6 +2,7 @@
 
 import sys
 import os
+from collections import OrderedDict
 
 
 class Modality(object):
@@ -259,9 +260,13 @@ class Partition:
     def getNbModalities(self):
         return self.nbModalitites
 
-    def getModality(self, modname):
+    def getModality(self, modname: str) -> Modality:
         "return the specified modality, exception if absent"
         return self.modalities[modname]
+
+    # def getModality(self, modnum: int) -> Modality:
+    #     "return the specified modality, exception if absent"
+    #     return self.modalities[self.modnames[modnum]]
 
     def __str__(self):
         return "Partition %s:\n\t\t"%self.attname + "\n\t\t".join(map(lambda n: str(self.modalities[n]), self.modnames))
@@ -333,7 +338,7 @@ class Vocabulary:
     def getDescribedAttributes(self):
         return OrderedDict(self.partitions).keys()
 
-    def getPartition(self, attname):
+    def getPartition(self, attname) -> Partition:
         return self.partitions[attname]
 
     def __str__(self):
