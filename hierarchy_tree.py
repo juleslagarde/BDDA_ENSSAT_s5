@@ -10,13 +10,13 @@ import json
 def printN(n, i):
 	pass
 
-def countCategory(rewriter):
+def countCategory(rewriter, partOrder):
 	rw.open()
 	flight = rewriter.readFlight()
 	n = 0
 	counter = dict()
 	while flight:
-		categ = flight.categorise()
+		categ = flight.categorise(partOrder)
 		if categ in counter:
 			counter[categ]+=1
 		else:
@@ -31,17 +31,25 @@ def countCategory(rewriter):
 
 def convertToHierarchy(counts: dict, voc: Vocabulary, partOrder: List[str]) -> dict:
 	counts = sorted(counts.items(), key=lambda x: x[0])
-	tree = dict()
-	tree["name"] = "US Flights (2008)"
-	tree["children"] = []
+	children = "children"
+	tree = {"name": "US Flights (2008)", children: []}
 	for cat, val in counts:
 		node = tree
-		assert len(cat)==len(partOrder)
+		assert len(cat) == len(partOrder)
 		for i, num in zip(range(len(cat)), cat):
 			partName = partOrder[i]
 			modName = voc.getPartition(partName).getModNames()[int(num)]
-			nextNode = {"name": partName, "children": []}
-			node["children"].append(nextNode)
+			lastChild = None
+			if len(node[children]) > 0:
+				lastChild = node[children][len(node[children]) - 1]
+				if lastChild["name"] == modName:
+					nextNode = lastChild
+				else:
+					nextNode = {"name": modName, children: []}
+					node[children].append(nextNode)
+			else:
+				nextNode = {"name": modName, children: []}
+				node[children].append(nextNode)
 			node = nextNode
 		node["value"] = val
 	return tree
@@ -62,15 +70,16 @@ if __name__ == "__main__":
 		sys.exit(1)
 	rw = RewriterFromCSV(voc, sys.argv[2])
 	fOut = open(sys.argv[3], "w+")
-	result = countCategory(rw)
-#	result["desc"] = voc.getDescription()
-	result = convertToHierarchy(result, voc, list(map(lambda x: x.getAttName(), voc.getPartitions())))
-	jsonOut = json.dumps(result, indent=2)
-	print(jsonOut)
+	partOrder = ['Origin', 'Dest', 'DayOfWeek', 'DepTime', 'ArrTime', 'AirTime', 'ArrDelay', 'DepDelay', 'Distance', 'Month', 'DayOfMonth' ]
+	print(partOrder)
+	result = countCategory(rw, partOrder)
+	# result["desc"] = voc.getDescription()
+	result = convertToHierarchy(result, voc, partOrder)
+	jsonOut = json.dumps(result)
+	# print(jsonOut)
 	fOut.write(jsonOut)
 	fOut.close()
 
-	output = open(sys.argv[3], "w")
 #	for part in voc.getPartitions()[:5]:
 #		for partelt in part.getModalities():
 #	nbPart = 2

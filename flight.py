@@ -97,31 +97,32 @@ class Flight(object):
 			print("field %s not in voc fields "%(field))
 		return ret
 
-	def rewrite(self):
+	def rewrite(self, partitions=None):
 		""" Rewrite the flight according to the vocabulary voc (voc is a Vocabulary)"""
-		rw=[]
-		for part in self.vocabulary.getPartitions():
+		if partitions is None:
+			partitions = self.vocabulary.getPartitions();
+		rw = []
+		for part in partitions:
 			for partelt in part.getModalities():
-				val=self.getValue(part.getAttName())
+				val = self.getValue(part.getAttName())
 				mu = partelt.getMu(val)
 				rw.append(mu)
 		return rw
 
-	def categorise(self):#, threshold = 0):
+	def categorise(self, partOrder):  # , threshold = 0):
 		""" Rewrite the flight according to the vocabulary voc (voc is a Vocabulary)"""
-		rw=""
-		for part in self.vocabulary.getPartitions():
-			i = 0
+		rw = ""
+		for partName in partOrder:
+			part = self.vocabulary.getPartition(partName)
 			maxI = 0
 			maxMu = 0
-			for partelt in part.getModalities():
-				val=self.getValue(part.getAttName())
+			for i, partelt in zip(range(part.getNbModalities()), part.getModalities()):
+				val = self.getValue(part.getAttName())
 				mu = partelt.getMu(val)
 				if mu > maxMu:
-					maxMu=mu
-					maxI=i
-				i+=1
-			rw+=str(maxI)
+					maxMu = mu
+					maxI = i
+			rw += str(maxI)
 		return rw
 
 	def match(self, filters, threshold = 0):
