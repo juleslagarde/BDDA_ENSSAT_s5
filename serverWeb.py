@@ -2,6 +2,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 from pathlib import Path
+from urllib.parse import urlparse, parse_qs
 
 hostName = "localhost"
 serverPort = 8080
@@ -17,11 +18,12 @@ class MyServer(BaseHTTPRequestHandler):
 			self.send_header("Content-type", "application/json")
 			self.end_headers()
 			self.wfile.write(bytes("{}", "utf-8"))
-		elif Path("Interface/"+path).is_file() and not path.find("/../"):
+		elif Path("Interface"+path).is_file() and -1 == path.find("/../"):
 			self.send_response(200)
-			self.send_header("Content-type", "text/html")
+			self.send_header("Content-type", "text/plain")
 			self.end_headers()
-			self.wfile.write(open("Interface/"+path, "rb").read())
+			self.wfile.write(open("Interface"+path, "rb").read())
+			print("sended file : "+"Interface"+path)
 		else:
 			self.send_response(200)
 			self.send_header("Content-type", "text/html")
@@ -34,19 +36,8 @@ class MyServer(BaseHTTPRequestHandler):
 			# self.wfile.write(bytes("</body></html>", "utf-8"))
 
 	def parsePath(self):
-		s1 = self.path.split("?", 2)
-		path = s1[0]
-		args = dict()
-		if len(s1) < 2:
-			return path, args
-		s2 = s1[1].split("&")
-		for arg in s2:
-			s3 = arg.split("=", 2)
-			if len(s3) == 1:
-				args[s3[0]] = ""
-			else:
-				args[s3[0]] = s3[1]
-		return path, args
+		url = urlparse(self.path)
+		return url.path, parse_qs(url.query)
 
 
 

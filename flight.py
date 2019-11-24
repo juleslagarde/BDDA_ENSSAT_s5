@@ -103,6 +103,8 @@ class Flight(object):
 		""" Rewrite the flight according to the vocabulary voc (voc is a Vocabulary)"""
 		if partitions is None:
 			partitions = self.vocabulary.getPartitions();
+		else:
+			partitions = list(map(lambda x: self.vocabulary.getPartition(x), partitions))
 		rw = []
 		for part in partitions:
 			for partelt in part.getModalities():

@@ -215,12 +215,13 @@ class EnumModality(Modality):
 
 class Partition:
 	"This class represents the partition of an attribute with several modalities, ex: 'age' = { 'young', 'medium', 'old' }"
-	def __init__(self, attname):
+	def __init__(self, attname, loop="F"):
 		""
 		self.attname = attname
 		self.modalities = dict()
 		self.modnames = list()
 		self.nbModalitites = 0
+		self.loop = loop == "T"
 
 	def getModNames(self):
 		return self.modnames
@@ -285,7 +286,7 @@ class Vocabulary:
 		"reads a CSV file whose format is : attname,modname,minSupport,minCore,maxCore,maxSupport"
 		# dictionary of the partitions
 		self.partitions = dict()
-		self.attributeNames = list()
+		self.partitionNames = list()
 		self.mappingTab=None
 
 
@@ -304,31 +305,31 @@ class Vocabulary:
 
 				else:
 					words = line.split(',')
-					if len(words) == 6:
+					if len(words) == 7:
 						# modalité de type trapèze
-						attname,modname,minSupport,minCore,maxCore,maxSupport = words
+						attname,loop,modname,minSupport,minCore,maxCore,maxSupport = words
 						# update existing partition or create new one if missing
-						partition = self.partitions.setdefault(attname, Partition(attname))
+						partition = self.partitions.setdefault(attname, Partition(attname, loop))
 						partition.addTrapeziumModality(modname, float(minSupport), float(minCore), float(maxCore), float(maxSupport))
-					elif len(words) == 3:
+					elif len(words) == 4:
 						# modalité de type énuméré
-						attname,modname,enumeration = words
+						attname,loop,modname,enumeration = words
 						# analyser l'enumération en tant que dictionnaire {valeur:poids}
 						enumeration = enumeration.split(';')
 						enumeration = map(lambda vw: (vw.split(':')[0], float(vw.split(':')[1])), enumeration)
 						enumeration = dict(enumeration)
 						# update existing partition or create new one if missing
-						partition = self.partitions.setdefault(attname, Partition(attname))
+						partition = self.partitions.setdefault(attname, Partition(attname, loop))
 						partition.addEnumModality(modname, enumeration)
 					else:
 						raise Exception("%s: bad format line %s"%(filename, line))
-		self.attributeNames = self.partitions.keys()
+		self.partitionNames = self.partitions.keys()
 
 	def getFields(self):
 		return self.fields
 
-	def getAttributeNames(self):
-		return self.attributeNames
+	def getPartitionNames(self):
+		return self.partitionNames
 
 	def getNbPartitions(self):
 		return self.nbParts
