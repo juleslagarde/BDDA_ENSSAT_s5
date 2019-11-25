@@ -64,12 +64,31 @@ def computeCoverage(flights, partitions=None):
 # 	return coverage
 
 
-def printCoverage(coverage, voc):
+def printCoverage(coverage, voc, partitions=None):
+	if partitions is None:
+		partitions = voc.getPartitions()
+	else:
+		partitions = list(map(lambda x: voc.getPartition(x), partitions))
+
 	i = 0
-	for part in voc.getPartitions():
+	for part in partitions:
 		for modName in part.getModNames():
 			print(part.getAttName() + " " + modName + " : " + str(coverage[i]))
 			i += 1
+
+
+def prettifyCoverage(coverage, voc, partitions=None):
+	if partitions is None:
+		partitions = voc.getPartitions()
+	else:
+		partitions = list(map(lambda x: voc.getPartition(x), partitions))
+	coverageP = {}
+	i = 0
+	for part in partitions:
+		for modName in part.getModNames():
+			coverageP[part.getAttName() + " : " + modName] = coverage[i]
+			i += 1
+	return coverageP
 
 
 if __name__ == "__main__":

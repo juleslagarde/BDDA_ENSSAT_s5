@@ -2,7 +2,7 @@ import sys
 from vocabulary import *
 from rewriterFromCSV import *
 from flight import Flight
-from coverage import computeCoverage, printCoverage
+from coverage import computeCoverage, printCoverage, prettifyCoverage
 
 
 def assoc(v, flights):
@@ -44,7 +44,7 @@ def distance(v1, v2, voc: Vocabulary):
 		return abs(i1 - i2) / (N - 1)
 
 
-def searchAtypical(v, flights, voc:Vocabulary):
+def searchAtypical(v, flights, voc: Vocabulary):
 	partName, m1 = v
 	maxMod = ""
 	maxVal = 0
@@ -61,13 +61,36 @@ def searchAtypical(v, flights, voc:Vocabulary):
 	return maxMod
 
 
+def getAssociativity(voc, dataFileName=None, filter=None):
+	if filter is None:
+		filter = ["DepDelay", "long"]
+	if dataFileName is None:
+		dataFileName = "2008short.csv"
+	rw = RewriterFromCSV(voc, "Data/"+dataFileName)
+	rw.open()
+	flights = rw.readFlights()
+	#	flights = map(lambda x:x.rewrite() ,flights)
+	rw.close()
+	# test atypical
+	# for part in voc.getPartitions():
+	# 	partName = part.getAttName()
+	# 	for modName in part.getModNames():
+	# 		print("atypical(%s, %s) = %s" % (
+	# 			partName, modName, searchAtypical((partName, modName), flights, voc)))
+	# sys.exit(1)
+	assoc1 = assoc([filter], flights)
+	assoc1 = prettifyCoverage(assoc1, voc)
+	atypic = filter[0]+" : "+searchAtypical(filter, flights, voc)
+	return {"assoc": assoc1, "atypic": atypic}
+
+
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
 		print("Usage: python %s <vocfile> <dataFile>" % sys.argv[0])
 		sys.exit(1)
 
 	if not os.path.isfile(sys.argv[1]):
-		print("Data file %s not found" % (sys.argv[2]))
+		print("Voc file %s not found" % (sys.argv[2]))
 		sys.exit(1)
 	voc = Vocabulary(sys.argv[1])
 
@@ -81,36 +104,8 @@ if __name__ == "__main__":
 	# sys.exit(1)
 
 
-	if not os.path.isfile(sys.argv[2]):
-		print("Voc file %s not found" % (sys.argv[2]))
+	if not os.path.isfile("Data/"+sys.argv[2]):
+		print("Data file %s not found" % (sys.argv[2]))
 		sys.exit(1)
-	rw = RewriterFromCSV(voc, sys.argv[2])
 
-	rw.open()
-	flights = rw.readFlights()
-	#	flights = map(lambda x:x.rewrite() ,flights)
-	rw.close()
-
-	# test atypical
-	for part in voc.getPartitions():
-		partName = part.getAttName()
-		for modName in part.getModNames():
-			print("atypical(%s, %s) = %s" % (
-				partName, modName, searchAtypical((partName, modName), flights, voc)))
-	sys.exit(1)
-
-	assoc1 = assoc([["DepDelay", "long"]], flights)
-
-	printCoverage(assoc1, voc)
-
-# filteredFlights = map(lambda x: x.rewrite(), filteredFlights)
-
-#	for part in voc.getPartitions()[:5]:
-#		for partelt in part.getModalities():
-#	nbPart = 2
-#	t = [0 for _ in range(nbPart)]
-#	partitions = voc.getPartitions()
-#	for i in range(0,nbPart):#voc.getNbPartitions()):
-#		for j in range(0,partitions[i].getNbModalities()):
-#			t[i]=j
-#			print(t)
+	print(getAssociativity(voc, sys.argv[2], None))
