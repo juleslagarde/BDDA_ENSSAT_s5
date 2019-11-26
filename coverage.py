@@ -82,11 +82,11 @@ def prettifyCoverage(coverage, voc, partitions=None):
 		partitions = voc.getPartitions()
 	else:
 		partitions = list(map(lambda x: voc.getPartition(x), partitions))
-	coverageP = {}
+	coverageP = []
 	i = 0
 	for part in partitions:
 		for modName in part.getModNames():
-			coverageP[part.getAttName() + " : " + modName] = coverage[i]
+			coverageP.append({"name": part.getAttName() + " : " + modName, "value": coverage[i]})
 			i += 1
 	return coverageP
 

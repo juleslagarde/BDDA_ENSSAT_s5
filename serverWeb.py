@@ -23,16 +23,16 @@ class MyServer(BaseHTTPRequestHandler):
 			self.send_response(200)
 			self.send_header("Content-type", "application/json")
 			self.end_headers()
-			parts = None if "parts" not in args else args["parts"][0]
-			fileName = None if "fileName" not in args else args["fileName"][0]
-			self.wfile.write(bytes(json.dumps(getHierarchyTree(voc, fileName, parts)), "utf-8"))
+			parts = None if "parts" not in args else json.loads(args["parts"][0])
+			filename = None if "filename" not in args else args["filename"][0]
+			self.wfile.write(bytes(json.dumps(getHierarchyTree(voc, filename, parts)), "utf-8"))
 		elif path == "/associativity":
 			self.send_response(200)
 			self.send_header("Content-type", "application/json")
 			self.end_headers()
-			fileName = None if "fileName" not in args else args["fileName"][0]
-			filter = None if "filter" not in args else args["filter"][0].split(" : ")
-			self.wfile.write(bytes(json.dumps(getAssociativity(voc, fileName, filter)), "utf-8"))
+			filename = None if "filename" not in args else args["filename"][0]
+			filter = None if "filter" not in args else json.loads(args["filter"][0])
+			self.wfile.write(bytes(json.dumps(getAssociativity(voc, filename, filter)), "utf-8"))
 		elif Path("Interface" + path).is_file() and -1 == path.find("/../"):
 			self.send_response(200)
 			self.send_header("Content-type", "text/plain")

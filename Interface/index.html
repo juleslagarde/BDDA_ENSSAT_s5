@@ -3,11 +3,49 @@
     <meta charset="UTF-8">
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" media="screen" />
+    <style>
+        label {
+            vertical-align: top;
+        }
+    </style>
     <script src="script.js"></script>
     <title>Projet BDD Avancée</title>
 </head>
 <body>
-    <p>This is an example web server.</p>
-    <div id="svg"></div>
+    <a class="btn btn-primary" href="javascript:hierarchy()">Page1 - Visualisation des données</a>
+    <a class="btn btn-primary" href="javascript:associativity()">Page2 - Corrélation et atypicité</a>
+    <div id="page1">
+        <form>
+            <label class="form-group" >
+                choix des termes à afficher<br>
+                <input style="width: 400px" id="p1_parts" type="text" value="DepTime>Distance>Origin>Dest"><br>
+                (DayOfWeek,DepTime,ArrTime,AirTime,ArrDelay,DepDelay,Distance,Month,DayOfMonth,TaxiIn,TaxiOut,CarrierDelay,WeatherDelay,SecurityDelay,LateAircraftDelay,Origin,Dest)<br>
+            </label>
+            <label class="form-group">
+                file name to read<br>
+                <input id="p1_fileName" type="text" value="2008short.csv"><br>
+                (2008short.csv, 2008.csv)<br>
+            </label>
+
+            <a class="btn btn-secondary" href="#" style="margin-top: 10px">Ok</a>
+        </form>
+        <div id="svg1"></div>
+    </div>
+    <div id="page2">
+        <form>
+            <label class="form-group">
+                choix des termes à afficher<br>
+                <input id="p2_filter" type="text" value="DepDelay : none"><br>
+            </label>
+            <label class="form-group">
+                file name to read<br>
+                <input id="p2_fileName" type="text" value="2008short.csv"><br>
+                (2008short.csv, 2008.csv)<br>
+            </label>
+            <a class="btn btn-secondary" href="#" style="margin-top: 10px">Ok</a>
+        </form>
+        <div id="svg2"></div>
+    </div>
 </body>
 </html>

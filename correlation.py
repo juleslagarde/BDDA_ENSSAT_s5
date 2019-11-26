@@ -51,14 +51,14 @@ def searchAtypical(v, flights, voc: Vocabulary):
 	cover = computeCoverage(flights, [partName])
 	modNames = voc.getPartition(partName).getModNames()
 	i1 = modNames.index(m1)
-	assert i1!=-1
+	assert i1 != -1
 	for m2 in modNames:
 		i2 = modNames.index(m2)
 		val = min(distance(v, (partName, m2), voc), cover[i2], 1-cover[i1])
 		if val >= maxVal:
 			maxVal = val
 			maxMod = m2
-	return maxMod
+	return maxMod, maxVal
 
 
 def getAssociativity(voc, dataFileName=None, filter=None):
@@ -80,7 +80,8 @@ def getAssociativity(voc, dataFileName=None, filter=None):
 	# sys.exit(1)
 	assoc1 = assoc([filter], flights)
 	assoc1 = prettifyCoverage(assoc1, voc)
-	atypic = filter[0]+" : "+searchAtypical(filter, flights, voc)
+	modName, value = searchAtypical(filter, flights, voc)
+	atypic = {"name": filter[0] + " : " + modName, "value": value}
 	return {"assoc": assoc1, "atypic": atypic}
 
 
