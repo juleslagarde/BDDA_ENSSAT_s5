@@ -194,5 +194,5 @@ window.onload = async function onload(){
 
 
 
-  await associativity()
+  await hierarchy()
 }

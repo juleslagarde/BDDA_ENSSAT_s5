@@ -11,7 +11,7 @@ from correlation import getAssociativity
 from hierarchy_tree import getHierarchyTree
 from vocabulary import Vocabulary
 
-hostName = "localhost"
+hostName = "148.60.222.11"
 serverPort = 8080
 
 
